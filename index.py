@@ -80,6 +80,11 @@ def generate_text(model: GPT2LMHeadModel, tokenizer, prompt, max_length=50, num_
 
 # 7. 학습 실행 예제 및 텍스트 생성
 if __name__ == "__main__":
+
+    # device 선택
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"device: {device}")
+
     # Kiwi 초기화 및 커스텀 토크나이저 생성
     tokenizer = CustomTokenizer()
 
@@ -102,8 +107,6 @@ if __name__ == "__main__":
 
     # Optimizer 및 학습 설정
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"device: {device}")
 
     # 학습 시작
     print("3. begin training")
@@ -111,7 +114,7 @@ if __name__ == "__main__":
     print(" - complete")
 
     # 학습된 모델로 텍스트 생성
-    prompt = "입냄새 안나나?"
+    prompt = "[BOS] 입냄새 안나나? [PAD]"
     generated_texts = generate_text(model, tokenizer, prompt, max_length=50, num_return_sequences=3)
     
     # 생성된 텍스트 출력
