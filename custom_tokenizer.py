@@ -1,7 +1,7 @@
 from kiwipiepy import Kiwi
 import os
 import json
-from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 special_tokens = ["[PAD]", "[UNK]", "[BOS]", "[EOS]"]
 special_tokens_set = set(special_tokens)
@@ -63,11 +63,7 @@ class CustomTokenizer:
     def build_vocab(self, texts):
         """텍스트 목록으로부터 어휘 사전을 생성합니다."""
         # 배열의 각 요소에 대해 함수를 병렬로 실행
-        results = []
-
-        for text in tqdm(texts):
-            ret = tokenize(text)
-            results.append(ret)
+        results = process_map(tokenize, texts, chunksize=1000)
 
         # add to vocab
         for token_list in results:

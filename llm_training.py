@@ -25,8 +25,9 @@ if __name__ == '__main__':
     print(" - complete")
 
     # 어휘 사전 생성
-    print("2. merging vocab")
+    print("2. build vocab")
     tokenizer.build_vocab(texts)
+    print(f" - token length: {len(tokenizer.vocab)}")
     print(" - complete")
 
     # 모델, 옵티마이저 준비
