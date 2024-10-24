@@ -2,6 +2,7 @@ import torch
 from custom_tokenizer import CustomTokenizer
 from datasets import load_dataset
 from llm_util import LlmUtil
+import os
 
 if __name__ == '__main__':
     # device 선택
@@ -15,6 +16,8 @@ if __name__ == '__main__':
     dataset = load_dataset("csv", data_files="formatted_data.csv")[
         "train"]  # .select(range(10))
     texts = [d['text'] for d in dataset]
+    dataloader = LlmUtil.create_data_loader(
+        texts, tokenizer, max_length=1000, batch_size=2)
     print(f"Len: {len(texts)}")
     print(" - complete")
 
@@ -23,10 +26,11 @@ if __name__ == '__main__':
     tokenizer.build_vocab(texts)
     print(" - complete")
 
-    # 모델, 데이터 로더, 옵티마이저 준비
-    model = LlmUtil.create_gpt2_model(vocab_size=len(tokenizer.vocab))
-    dataloader = LlmUtil.create_data_loader(
-        texts, tokenizer, max_length=50, batch_size=2)
+    # 모델, 옵티마이저 준비
+    if os.path.exists('./my_finetuned_model'):
+        model = LlmUtil.load_gpt2_model('./my_finetuned_model')
+    else:
+        model = LlmUtil.create_gpt2_model(vocab_size=len(tokenizer.vocab))
     optimizer = LlmUtil.create_optimizer(model)
 
     # 학습 시작

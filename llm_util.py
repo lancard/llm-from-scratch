@@ -33,6 +33,11 @@ class LlmUtil:
         model = GPT2LMHeadModel(configuration)
         return model
 
+    # GPT2 모델 로드
+    def load_gpt2_model(dir_path):
+        model = GPT2LMHeadModel.from_pretrained(dir_path)
+        return model
+
     # 데이터 로더 설정
     def create_data_loader(texts, tokenizer, max_length, batch_size):
         dataset = TextDataset(texts, tokenizer, max_length)
