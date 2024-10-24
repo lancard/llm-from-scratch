@@ -49,22 +49,22 @@ class LlmUtil:
         return torch.optim.AdamW(model.parameters(), lr=lr)
 
     # 학습 함수 정의
-    def train_gpt2(model, dataloader, optimizer, device, num_epochs):
+    def train_gpt2_once(model, dataloader, optimizer, device):
         model = model.to(device)
         model.train()
-        for epoch in range(num_epochs):
-            for batch in tqdm(dataloader):
-                optimizer.zero_grad()
-                input_ids = batch['input_ids'].to(device)
-                attention_mask = batch['attention_mask'].to(device)
 
-                outputs = model(input_ids=input_ids,
-                                attention_mask=attention_mask, labels=input_ids)
-                loss = outputs.loss
-                loss.backward()
-                optimizer.step()
+        for batch in tqdm(dataloader):
+            optimizer.zero_grad()
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
 
-            print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
+            outputs = model(input_ids=input_ids,
+                            attention_mask=attention_mask, labels=input_ids)
+            loss = outputs.loss
+            loss.backward()
+            optimizer.step()
+        
+        return loss
 
     # 텍스트 생성 함수
     def generate_text(model: GPT2LMHeadModel, tokenizer, prompt, max_length=50, num_return_sequences=1):

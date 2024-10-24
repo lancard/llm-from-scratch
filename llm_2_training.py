@@ -19,7 +19,6 @@ if __name__ == '__main__':
         str = data_file.read()
         texts = str.split("ζ")
 
-
     # 모델, 옵티마이저 준비
     # if os.path.exists('./my_finetuned_model'):
     #    model = LlmUtil.load_gpt2_model('./my_finetuned_model')
@@ -27,13 +26,13 @@ if __name__ == '__main__':
     model = LlmUtil.create_gpt2_model(vocab_size=len(tokenizer.vocab))
     optimizer = LlmUtil.create_optimizer(model)
     dataloader = LlmUtil.create_data_loader(
-        texts, tokenizer, max_length=1000, batch_size=2)
+        texts, tokenizer, max_length=1000, batch_size=3)
 
     # 학습 시작
-    print("1. begin training")
-    LlmUtil.train_gpt2(model, dataloader, optimizer, device, num_epochs=3)
-    print(" - complete")
-
-    print("2. saving model")
-    model.save_pretrained("./my_finetuned_model")
+    print("begin training")
+    num_epochs = 3
+    for epoch in range(num_epochs):
+        loss = LlmUtil.train_gpt2_once(model, dataloader, optimizer, device)
+        print(f" - saved epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
+        model.save_pretrained("./my_finetuned_model")
     print(" - complete")
