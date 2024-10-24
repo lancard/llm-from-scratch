@@ -51,7 +51,7 @@ class CustomTokenizer:
             self.vocab = json_data['vocab']
             self._generate_related_data()
 
-    def save_config(self, dir_path):
+    def save_config(self, dir_path, data):
         os.makedirs(dir_path, exist_ok=True)
 
         file_path = os.path.join(dir_path, "config.json")
@@ -60,10 +60,15 @@ class CustomTokenizer:
             json.dump({"special_tokens": self.special_tokens,
                       "vocab": self.vocab}, json_file, ensure_ascii=False, indent=4)
 
+        file_path = os.path.join(dir_path, "data.txt")
+
+        with open(file_path, 'w', encoding='utf-8') as data_file:
+            data_file.write("ζ".join(data))
+
     def build_vocab(self, texts):
         """텍스트 목록으로부터 어휘 사전을 생성합니다."""
         # 배열의 각 요소에 대해 함수를 병렬로 실행
-        results = process_map(tokenize, texts, chunksize=1000)
+        results = process_map(tokenize, texts, chunksize=10)
 
         # add to vocab
         for token_list in results:
