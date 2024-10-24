@@ -24,7 +24,10 @@ def join(token_list):
     """토큰을 텍스트로 합칩니다."""
     tuple_list = []
     for t in token_list:
-        tuple_list.append((t.split("/")[0], t.split("/")[1]))
+        if t in special_tokens_set:
+            tuple_list.append((t, "USER0"))
+        else:
+            tuple_list.append((t.split("/")[0], t.split("/")[1]))
     return kiwi.join(tuple_list)
 
 class CustomTokenizer:
@@ -96,8 +99,13 @@ class CustomTokenizer:
         if skip_special_tokens:
             tokens = [t for t in tokens if t not in self.special_tokens]
 
+        print(tokens)
+
         return join(tokens)
 
     @property
     def pad_token_id(self):
         return self.vocab["[PAD]"]
+    @property
+    def eos_token_id(self):
+        return self.vocab["[EOS]"]

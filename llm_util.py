@@ -2,6 +2,7 @@ import torch
 from transformers import GPT2LMHeadModel, GPT2Config
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
+from custom_tokenizer import CustomTokenizer
 
 
 class TextDataset(Dataset):
@@ -63,11 +64,11 @@ class LlmUtil:
             loss = outputs.loss
             loss.backward()
             optimizer.step()
-        
+
         return loss
 
     # 텍스트 생성 함수
-    def generate_text(model: GPT2LMHeadModel, tokenizer, prompt, max_length=50, num_return_sequences=1):
+    def generate_text(model: GPT2LMHeadModel, tokenizer: CustomTokenizer, prompt, max_length=50, num_return_sequences=1, skip_special_tokens=True):
         model.eval()
         input_ids = torch.tensor(
             [tokenizer.encode(prompt, add_special_tokens=True)]).to(model.device)
@@ -83,10 +84,10 @@ class LlmUtil:
                 temperature=1.0,
                 do_sample=True,
                 top_k=50,
-                eos_token_id=tokenizer.vocab["[EOS]"],
+                eos_token_id=tokenizer.eos_token_id,
                 pad_token_id=tokenizer.pad_token_id
             )
 
         generated_texts = [tokenizer.decode(
-            output_seq.tolist()) for output_seq in output]
+            output_seq.tolist(), skip_special_tokens=skip_special_tokens) for output_seq in output]
         return generated_texts
