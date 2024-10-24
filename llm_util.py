@@ -1,6 +1,7 @@
 import torch
 from transformers import GPT2LMHeadModel, GPT2Config
 from torch.utils.data import Dataset, DataLoader
+from tqdm import tqdm
 
 
 class TextDataset(Dataset):
@@ -47,7 +48,7 @@ class LlmUtil:
         model = model.to(device)
         model.train()
         for epoch in range(num_epochs):
-            for batch in dataloader:
+            for batch in tqdm(dataloader):
                 optimizer.zero_grad()
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
@@ -55,7 +56,6 @@ class LlmUtil:
                 outputs = model(input_ids=input_ids,
                                 attention_mask=attention_mask, labels=input_ids)
                 loss = outputs.loss
-                print(f"loss: {loss}")
                 loss.backward()
                 optimizer.step()
 
